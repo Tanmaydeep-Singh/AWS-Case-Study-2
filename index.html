@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Form</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background: #fff;
+      width: 400px;
+      padding: 40px 35px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
+      margin-bottom: 30px;
+    }
+
+    .form-container:hover {
+      transform: translateY(-5px);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+      font-size: 26px;
+      letter-spacing: 0.5px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 14px;
+      background-color: #fafafa;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #2575fc;
+      box-shadow: 0 0 8px rgba(37, 117, 252, 0.3);
+      outline: none;
+      background: #fff;
+    }
+
+    textarea {
+      resize: none;
+      min-height: 100px;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #2575fc, #6a11cb);
+      transform: scale(1.03);
+    }
+
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 14px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .error {
+      color: #e63946;
+    }
+
+    .success {
+      color: #06d6a0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #dataContainer {
+      width: 400px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 350px;
+    }
+
+    .record {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+
+    .record:last-child {
+      border-bottom: none;
+    }
+
+    .record strong {
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- FORM -->
+  <form id="contactForm" class="form-container">
+    <h2>Contact Us</h2>
+
+    <label for="name">Full Name</label>
+    <input type="text" id="name" name="name" placeholder="Enter your name" required />
+
+    <label for="email">Email Address</label>
+    <input type="email" id="email" name="email" placeholder="Enter your email" required />
+
+    <label for="message">Message</label>
+    <textarea id="message" name="message" placeholder="Write your message here..." required></textarea>
+
+    <label for="status">Status</label>
+    <select id="status" name="status" required>
+      <option value="">Select status</option>
+      <option value="New">New</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Resolved">Resolved</option>
+    </select>
+
+    <button type="submit">Submit</button>
+    <div class="message" id="responseMessage"></div>
+  </form>
+
+  <!-- DATA DISPLAY -->
+  <div id="dataContainer">
+    <h3 style="text-align:center; margin-bottom:15px; color:#333;">Submitted Entries</h3>
+    <div id="recordsList"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("contactForm");
+    const responseMessage = document.getElementById("responseMessage");
+    const recordsList = document.getElementById("recordsList");
+
+    // ✅ POST request - submit form
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      responseMessage.textContent = "";
+      responseMessage.className = "message";
+
+      const formData = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        message: document.getElementById("message").value.trim(),
+        status: document.getElementById("status").value,
+      };
+
+      try {
+        const response = await fetch(
+          "https://7izg6ny361.execute-api.ap-south-1.amazonaws.com/default/submissionLambda",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          }
+        );
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+        responseMessage.textContent = "✅ Form submitted successfully!";
+        responseMessage.classList.add("success");
+        form.reset();
+
+        // Refresh data after successful submission
+        fetchData();
+      } catch (err) {
+        responseMessage.textContent = "❌ Failed to submit form. Please try again.";
+        responseMessage.classList.add("error");
+        console.error("Error:", err);
+      }
+    });
+
+    // ✅ GET request - fetch data
+    async function fetchData() {
+      recordsList.innerHTML = "<p style='text-align:center;'>Loading...</p>";
+      try {
+        const response = await fetch(
+          "https://gxx64jiuc0.execute-api.ap-south-1.amazonaws.com/default/queryLambda/submissions",
+        );
+        const data = await response.json();
+        console.log("data",data)
+
+        if (!data.data || data.data.length === 0) {
+          recordsList.innerHTML = "<p style='text-align:center;'>No records found.</p>";
+          return;
+        }
+
+        recordsList.innerHTML = "";
+        data.data.forEach((item) => {
+          const record = document.createElement("div");
+          record.className = "record";
+
+          const name = item.name?.S || "N/A";
+          const email = item.email?.S || "N/A";
+          const message = item.message?.S || "N/A";
+          const status = item.status?.S || "N/A";
+
+          record.innerHTML = `
+            <strong>Name:</strong> ${name}<br/>
+            <strong>Email:</strong> ${email}<br/>
+            <strong>Message:</strong> ${message}<br/>
+            <strong>Status:</strong> ${status}
+          `;
+          recordsList.appendChild(record);
+        });
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        recordsList.innerHTML = "<p style='text-align:center; color:red;'>Failed to load data.</p>";
+      }
+    }
+
+    // Auto-fetch data on page load
+    fetchData();
+  </script>
+</body>
+</html>
