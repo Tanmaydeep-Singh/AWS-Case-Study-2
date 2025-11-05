@@ -34,6 +34,26 @@ Create a table named **`UserSubmissions`** with the following schema:
 | **submissionDate** | String | Date of submission |
 | **status** | String | Submission status |
 
+[![Architecture Diagram](./Images/Screenshot1.png)](./Images/Screenshot1.png)
+[![Architecture Diagram](./Images/Screenshot2.png)](./Images/Screenshot2.png)
+[![Architecture Diagram](./Images/Screenshot3.png)](./Images/Screenshot3.png)
+[![Architecture Diagram](./Images/Screenshot4.png)](./Images/Screenshot4.png)
+[![Architecture Diagram](./Images/Screenshot5.png)](./Images/Screenshot5.png)
+[![Architecture Diagram](./Images/Screenshot6.png)](./Images/Screenshot6.png)
+[![Architecture Diagram](./Images/Screenshot7.png)](./Images/Screenshot7.png)
+[![Architecture Diagram](./Images/Screenshot8.png)](./Images/Screenshot8.png)
+[![Architecture Diagram](./Images/Screenshot9.png)](./Images/Screenshot9.png)
+[![Architecture Diagram](./Images/Screenshot10.png)](./Images/Screenshot10.png)
+[![Architecture Diagram](./Images/Screenshot11.png)](./Images/Screenshot11.png)
+[![Architecture Diagram](./Images/Screenshot12.png)](./Images/Screenshot12.png)
+[![Architecture Diagram](./Images/Screenshot13.png)](./Images/Screenshot13.png)
+[![Architecture Diagram](./Images/Screenshot14.png)](./Images/Screenshot14.png)
+
+
+
+
+
+
 ---
 
 ### 2. Lambda Functions
